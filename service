@@ -1,0 +1,30 @@
+print_usage()
+{
+    echo "usage: $0 {pkg|start|run|stop|ls|restart}"
+}
+case "$1" in
+    pkg)
+        mvn clean package -Dmaven.test.skip=true
+        ;;
+    start)
+        nohup java -jar target/pkm.jar --spring.config.location=conf/application.properties $2 &
+        ;;
+    run)
+        java -jar target/pkm.jar --spring.config.location=conf/application.properties $2 &
+        ;;
+    ls)
+        ps aux|grep pkm
+        ;;
+    cs)
+        curl -X GET --header 'Accept: application/json' 'http://127.0.0.1:'"$2"'/god/createService'
+        ;;
+    stop)
+        ps aux|grep pkm | grep -v grep | awk '{print $2}' | xargs kill -9
+        ;;
+    restart)
+        ps aux|grep pkm | grep -v grep | awk '{print $2}' | xargs kill -9
+        nohup java -jar target/pkm.jar --spring.config.location=conf/application.properties $2 &
+        ;;
+    *)
+        print_usage
+esac

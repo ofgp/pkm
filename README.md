@@ -1,6 +1,6 @@
 # private key manager
 ```
 create serviceId for caller
-create private key pair
-sign message with public key hash
+create&store private key pair
+sign message without private key
 ```

@@ -2,7 +2,6 @@ package com.rst.pkm;
 
 import com.rst.pkm.common.AESUtil;
 import com.rst.pkm.common.Constant;
-import com.rst.pkm.common.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -39,9 +38,5 @@ public class PkmApplication {
         }
 
 		SpringApplication.run(PkmApplication.class, args);
-
-	    AESUtil.wipe(Constant.ADMIN_KEY);
-	    //for administrator authentication
-        Constant.ADMIN_KEY = Converter.sha256(password.getBytes());
 	}
 }

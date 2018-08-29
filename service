@@ -16,7 +16,7 @@ case "$1" in
         ps aux|grep pkm
         ;;
     cs)
-        curl -X GET --header 'Accept: application/json' --header 'password: "$3"' 'http://127.0.0.1:'"$2"'/god/createService'
+        curl -X GET --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/createService'
         ;;
     stop)
         ps aux|grep pkm | grep -v grep | awk '{print $2}' | xargs kill -9

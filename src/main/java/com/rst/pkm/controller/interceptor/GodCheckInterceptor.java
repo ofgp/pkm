@@ -1,7 +1,7 @@
 package com.rst.pkm.controller.interceptor;
 
+import com.rst.pkm.common.AESUtil;
 import com.rst.pkm.common.Constant;
-import com.rst.pkm.common.Converter;
 import com.rst.pkm.common.Error;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -31,7 +31,7 @@ public class GodCheckInterceptor implements HandlerInterceptor {
 
         String password = request.getHeader(ADMIN_PASSWORD);
         if (StringUtils.isEmpty(password) ||
-                !Arrays.equals(Converter.sha256(password.getBytes()), Constant.ADMIN_KEY)) {
+                !Arrays.equals(AESUtil.aesKeyFrom(password), Constant.ADMIN_KEY)) {
             CustomException.response(Error.ADMIN_PWD_INVALID);
         }
 

@@ -46,7 +46,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)  
                 .apiInfo(apiInfo())
                 .globalOperationParameters(pars)
-                .select()  
+                .select()
                 .apis(RequestHandlerSelectors.basePackage("com.rst.pkm.controller"))
                 .paths(PathSelectors.any())
                 .build();

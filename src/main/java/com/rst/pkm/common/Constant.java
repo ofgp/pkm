@@ -42,4 +42,12 @@ public class Constant {
     public static final int SIGNATURE_TYPE_EOS = 2;
 
     public static byte[] ADMIN_KEY;
+
+    public static void SET_ADMIN_KEY(String password) {
+        byte[] adminBytes = Converter.ripemd160(password.getBytes());
+        byte[] result = new byte[16];
+        System.arraycopy(adminBytes, 0, result, 0, 16);
+
+        ADMIN_KEY = result;
+    }
 }

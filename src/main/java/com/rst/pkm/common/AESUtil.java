@@ -20,8 +20,8 @@ public class AESUtil {
             IvParameterSpec ivParameterSpec = new IvParameterSpec(initParam);
 
             // 指定加密的算法、工作模式和填充方式
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");//"算法/模式/补码方式"
-            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);//使用CBC模式，需要一个向量iv，可增加加密算法的强度
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
             return cipher.doFinal(data);
 
         } catch (Exception e) {
@@ -41,15 +41,13 @@ public class AESUtil {
 
     public static byte[] aesDecrypt(byte[] data, byte[] key) {
         try {
-            //key
             byte[] enCodeFormat = key;
             SecretKeySpec secretKey = new SecretKeySpec(enCodeFormat, "AES");
-            //iv
+
             byte[] initParam = IV_STRING.getBytes();
             IvParameterSpec ivParameterSpec = new IvParameterSpec(initParam);
-            //加密器
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");//"算法/模式/补码方式"
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);//使用CBC模式，需要一个向量iv，可增加加密算法的强度
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
             return cipher.doFinal(data);
         } catch (Exception e) {
             e.printStackTrace();

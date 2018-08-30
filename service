@@ -19,19 +19,19 @@ case "$1" in
         curl -X GET --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/createService'
         ;;
     addIp)
-        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/allowIp/0/'"$4"'/'"$5"'/'
+        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/config/0/'"$4"'/'"$5"'/'
         ;;
     delIp)
-        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/allowIp/1/'"$4"'/'"$5"'/'
+        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/config/1/'"$4"'/'"$5"'/'
         ;;
     list)
-        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/allowIp/2/'"$4"'/no'
+        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/config/2/'"$4"'/no'
         ;;
     lock)
-        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/allowIp/3/'"$4"'/no'
+        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/config/3/'"$4"'/no'
         ;;
     unlock)
-        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/allowIp/4/'"$4"'/no'
+        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'password:'"$3" 'http://127.0.0.1:'"$2"'/god/config/4/'"$4"'/no'
         ;;
     stop)
         ps aux|grep pkm | grep -v grep | awk '{print $2}' | xargs kill -9

@@ -33,14 +33,14 @@ public class GodController {
                 + "privateKey: " + resGenerateService.getPrivateKey() + "\n";
     }
 
-    @ApiOperation("生成service配置信息")
-    @PostMapping("/allowIp/{op}/{serviceId}/{ip}")
+    @ApiOperation("service配置信息修改")
+    @PostMapping("/config/{op}/{serviceId}/{ip}")
     public String allowIp(
             @ApiParam(value = "添加/删除白名单ip", required = true) @PathVariable("op") int op,
             @ApiParam(value = "添加/删除白名单ip", required = true) @PathVariable("serviceId") String serviceId,
             @ApiParam(value = "添加/删除白名单ip") @PathVariable(value = "ip") String ip
     ) {
-        logger.info("/allowIp");
+        logger.info("/config");
         if (op == 0) {
             godService.addValidIp(serviceId, ip);
         } else if (op == 1) {

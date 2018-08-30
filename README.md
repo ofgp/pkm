@@ -44,3 +44,6 @@ privateKey: A899F28317CCD8E978BB163B4FC18C35717072D58E22720E2C81DFE710EBFE34
 ./service addIp #port #pwd #serviceId #Ip
 ./service delIp #port #pwd #serviceId #Ip
 ```
+
+#### 接口文档
+服务地址/swagger-ui.html，例如：http://127.0.0.1/swagger-ui.html

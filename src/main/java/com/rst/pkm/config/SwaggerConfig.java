@@ -48,7 +48,7 @@ public class SwaggerConfig {
                 .globalOperationParameters(pars)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.rst.pkm.controller"))
-                .paths(PathSelectors.any())
+                .paths(PathSelectors.ant("/key/**"))
                 .build();
     }
   

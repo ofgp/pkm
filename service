@@ -36,10 +36,6 @@ case "$1" in
     stop)
         ps aux|grep pkm | grep -v grep | awk '{print $2}' | xargs kill -9
         ;;
-    restart)
-        ps aux|grep pkm | grep -v grep | awk '{print $2}' | xargs kill -9
-        nohup java -jar target/pkm.jar --spring.config.location=conf/application.properties $2 &
-        ;;
     *)
         print_usage
 esac

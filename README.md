@@ -8,16 +8,18 @@
 >服务访问控制，只有授权接入方及IP白名单可访问
 
 #### 服务启动
-#pwd为服务启动密码，首次启动时自行决定，后续重启采用相同密码方可访问过去的运行数据
+#{pwd}为服务启动密码，首次启动时自行决定，后续重启采用相同密码方可访问过去的运行数据
 ```
 ./service start --password=#{pwd}
+./service run --password=#{pwd}
+./service stop
 ```
 #### 创建service
 #{port}替换成服务实际端口，#{pwd}为服务启动密码
 ```
 ./service cs #{port} #{pwd}
 ```
-该命令输出如下：
+该命令输出样例如下：
 serviceId和privateKey提供给调用方，后续接口调用需要使用
 ```
 serviceId: bfab0fd1-0522-419e-a351-6dc1b3ccc357

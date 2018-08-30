@@ -1,5 +1,6 @@
 package com.rst.pkm.service.impl;
 
+import com.google.gson.GsonBuilder;
 import com.rst.pkm.common.*;
 import com.rst.pkm.common.Error;
 import com.rst.pkm.controller.GodController;
@@ -14,9 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.math.ec.ECPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author hujia
@@ -56,11 +58,72 @@ public class GodServiceImpl implements GodService {
     }
 
     @Override
-    public String generateSignature(String input, String serviceId) {
-        ServiceProfile serviceProfile = serviceProfileDao.findByServiceId(serviceId);
-        if (serviceProfile == null) {
-            CustomException.response(Error.SID_INVALID);
+    public void addValidIp(String serviceId, String ip) {
+        if (StringUtils.isEmpty(ip)) {
+            return;
         }
+
+        ServiceProfile serviceProfile = profileFrom(serviceId);
+        Set<String> allowIps = serviceProfile.getAllowIps();
+        if (allowIps == null) {
+            allowIps = new HashSet<>(1);
+        }
+        allowIps.add(ip.trim());
+        serviceProfile.setAllowIps(allowIps);
+
+        serviceProfileDao.save(serviceProfile);
+    }
+
+    @Override
+    public void delValidIp(String serviceId, String ip) {
+        if (StringUtils.isEmpty(ip)) {
+            return;
+        }
+
+        ServiceProfile serviceProfile = profileFrom(serviceId);
+        Set<String> allowIps = serviceProfile.getAllowIps();
+        if (allowIps == null) {
+            return;
+        }
+
+        allowIps.remove(ip.trim());
+        serviceProfile.setAllowIps(allowIps);
+
+        serviceProfileDao.save(serviceProfile);
+    }
+
+    @Override
+    public String getService(String serviceId) {
+        List<ServiceProfile> serviceProfiles = new ArrayList<>();
+        if ("all".equalsIgnoreCase(serviceId)) {
+            serviceProfiles = serviceProfileDao.findAll();
+        } else {
+            serviceProfiles.add(profileFrom(serviceId));
+        }
+
+        return new GsonBuilder()
+                .setPrettyPrinting()
+                .serializeNulls()
+                .create().toJson(serviceProfiles).toString();
+    }
+
+    @Override
+    public void lockService(String serviceId) {
+        ServiceProfile serviceProfile = profileFrom(serviceId);
+        serviceProfile.setLockout(1);
+        serviceProfileDao.save(serviceProfile);
+    }
+
+    @Override
+    public void unLockService(String serviceId) {
+        ServiceProfile serviceProfile = profileFrom(serviceId);
+        serviceProfile.setLockout(0);
+        serviceProfileDao.save(serviceProfile);
+    }
+
+    @Override
+    public String generateSignature(String input, String serviceId) {
+        ServiceProfile serviceProfile = profileFrom(serviceId);
 
         ECDSASignature signature = ECDSAUtil.sign(
                 Converter.sha256(input.getBytes()),
@@ -68,5 +131,13 @@ public class GodServiceImpl implements GodService {
                 0);
 
         return Converter.byteArrayToHexString(signature.encodeToDER());
+    }
+
+    private ServiceProfile profileFrom(String serviceId) {
+        ServiceProfile serviceProfile = serviceProfileDao.findByServiceId(serviceId);
+        if (serviceProfile == null) {
+            CustomException.response(Error.SID_INVALID);
+        }
+        return serviceProfile;
     }
 }

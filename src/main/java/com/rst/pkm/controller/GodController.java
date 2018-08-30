@@ -33,6 +33,31 @@ public class GodController {
                 + "privateKey: " + resGenerateService.getPrivateKey() + "\n";
     }
 
+    @ApiOperation("生成service配置信息")
+    @PostMapping("/allowIp/{op}/{serviceId}/{ip}")
+    public String allowIp(
+            @ApiParam(value = "添加/删除白名单ip", required = true) @PathVariable("op") int op,
+            @ApiParam(value = "添加/删除白名单ip", required = true) @PathVariable("serviceId") String serviceId,
+            @ApiParam(value = "添加/删除白名单ip") @PathVariable(value = "ip") String ip
+    ) {
+        logger.info("/allowIp");
+        if (op == 0) {
+            godService.addValidIp(serviceId, ip);
+        } else if (op == 1) {
+            godService.delValidIp(serviceId, ip);
+        } else if (op == 2) {
+            return godService.getService(serviceId) + "\n";
+        } else if (op == 3) {
+            godService.lockService(serviceId);
+        } else if (op == 4) {
+            godService.unLockService(serviceId);
+        } else  {
+            return "unsupported op\n";
+        }
+
+        return "op success!\n";
+    }
+
     @ApiOperation("根据请求内容生成签名数据")
     @PostMapping("/createSignature")
     public CommonResult<String> generateSignature(

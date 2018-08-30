@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author hujia
@@ -98,6 +99,20 @@ public class ServiceProfileDao {
         }
 
         return profile;
+    }
+
+    public List<ServiceProfile> findAll() {
+        byte[] randomKey = FileUtil.loadRandomKey(savePath);
+        List<ServiceProfile> result = serviceProfileMap.values().stream().map(item -> {
+            ServiceProfile profile = ServiceProfile.from(item);
+            if (profile != null && !StringUtils.isEmpty(profile.getAesHex())) {
+                byte[] aesHexBytes = AESUtil.aesDecrypt(Converter.hexStringToByteArray(profile.getAesHex()), randomKey);
+                profile.setAesHex(new String(aesHexBytes));
+            }
+            return profile;
+        }).collect(Collectors.toList());
+        AESUtil.wipe(randomKey);
+        return result;
     }
 
     public boolean save(ServiceProfile profile) {

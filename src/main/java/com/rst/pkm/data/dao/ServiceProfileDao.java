@@ -1,21 +1,23 @@
 package com.rst.pkm.data.dao;
 
+import com.google.gson.Gson;
 import com.rst.pkm.common.AESUtil;
 import com.rst.pkm.common.Constant;
 import com.rst.pkm.common.Converter;
 import com.rst.pkm.common.FileUtil;
 import com.rst.pkm.data.entity.ServiceProfile;
-import com.google.gson.Gson;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +31,6 @@ public class ServiceProfileDao {
     private String savePath;
 
     public static final String FILE_NAME = "service-profile";
-    public static final String BACKUP_FILE_NAME = "backup/service-profile";
 
     @Data
     private class FileData {
@@ -46,12 +47,10 @@ public class ServiceProfileDao {
         }
 
 
-        byte[] content = FileUtil.load(savePath + FILE_NAME);
-        if (content == null || content.length <= 0) {
-            content = FileUtil.load(savePath + BACKUP_FILE_NAME);
-        }
+        byte[] content = FileUtil.safeLoad(savePath + FILE_NAME);
 
         if (content == null || content.length <= 0) {
+            logger.info("warning:none local data!");
             return;
         }
 
@@ -59,7 +58,7 @@ public class ServiceProfileDao {
         content = AESUtil.aesDecrypt(content, Constant.ADMIN_KEY);
 
         if (content == null) {
-            logger.error("local data or password incorrect!");
+            logger.error("data or password incorrect!");
             return;
         }
 
@@ -69,18 +68,15 @@ public class ServiceProfileDao {
             return;
         }
 
-        byte[] randomKey = FileUtil.loadRandomKey(savePath);
         byte[] oldRandomKey = Converter.hexStringToByteArray(fileData.getRandomKey());
         fileData.getServiceProfiles().forEach(
                 serviceProfile -> {
                     byte[] aesHexBytes = AESUtil.aesDecrypt(Converter.hexStringToByteArray(
                             serviceProfile.getAesHex()), oldRandomKey);
 
-                    serviceProfile.setAesHex(Converter.byteArrayToHexString(AESUtil.aesEncrypt(aesHexBytes, randomKey)));
+                    serviceProfile.setAesHex(new String(aesHexBytes));
                     serviceProfileMap.put(serviceProfile.getServiceId(), serviceProfile);
                 });
-
-        AESUtil.wipe(randomKey);
     }
 
     /**
@@ -89,30 +85,11 @@ public class ServiceProfileDao {
      * @return
      */
     public ServiceProfile findByServiceId(String serviceId) {
-        ServiceProfile profile = ServiceProfile.from(serviceProfileMap.get(serviceId));
-
-        if (profile != null && !StringUtils.isEmpty(profile.getAesHex())) {
-            byte[] randomKey = FileUtil.loadRandomKey(savePath);
-            byte[] aesHexBytes = AESUtil.aesDecrypt(Converter.hexStringToByteArray(profile.getAesHex()), randomKey);
-            AESUtil.wipe(randomKey);
-            profile.setAesHex(new String(aesHexBytes));
-        }
-
-        return profile;
+        return serviceProfileMap.get(serviceId);
     }
 
     public List<ServiceProfile> findAll() {
-        byte[] randomKey = FileUtil.loadRandomKey(savePath);
-        List<ServiceProfile> result = serviceProfileMap.values().stream().map(item -> {
-            ServiceProfile profile = ServiceProfile.from(item);
-            if (profile != null && !StringUtils.isEmpty(profile.getAesHex())) {
-                byte[] aesHexBytes = AESUtil.aesDecrypt(Converter.hexStringToByteArray(profile.getAesHex()), randomKey);
-                profile.setAesHex(new String(aesHexBytes));
-            }
-            return profile;
-        }).collect(Collectors.toList());
-        AESUtil.wipe(randomKey);
-        return result;
+        return serviceProfileMap.values().stream().collect(Collectors.toList());
     }
 
     public boolean save(ServiceProfile profile) {
@@ -124,12 +101,9 @@ public class ServiceProfileDao {
         FileData data = new FileData();
         data.setRandomKey(Converter.byteArrayToHexString(randomKey));
         data.getServiceProfiles().addAll(serviceProfileMap.values());
-        boolean success;
         byte[] content = AESUtil.aesEncrypt(new Gson().toJson(data).getBytes(), Constant.ADMIN_KEY);
-        success = FileUtil.save(Converter.byteArrayToHexString(content), savePath + FILE_NAME);
-        if (success) {
-            success = FileUtil.backup(savePath + FILE_NAME, savePath + BACKUP_FILE_NAME);
-        }
+        boolean success = FileUtil.safeSave(
+                Converter.byteArrayToHexString(content), savePath + FILE_NAME);
 
         AESUtil.wipe(randomKey);
         return success;

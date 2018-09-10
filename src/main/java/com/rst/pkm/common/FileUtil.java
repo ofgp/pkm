@@ -1,6 +1,7 @@
 package com.rst.pkm.common;
 
 import com.google.common.io.Files;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 
@@ -8,6 +9,56 @@ import java.io.*;
  * @author hujia
  */
 public class FileUtil {
+    public static boolean safeSave(String content, String fileName) {
+        return safeSave(content, fileName, defaultBackupName(fileName));
+    }
+
+    public static boolean safeSave(String content, String fileName, String backupFileName) {
+        boolean success = FileUtil.save(content, fileName);
+        if (success) {
+            success = FileUtil.copy(fileName, backupFileName);
+        } else {
+            FileUtil.copy(backupFileName, fileName);
+        }
+
+        return success;
+    }
+
+    public static byte[] safeLoad(String fileName) {
+        byte[] content = FileUtil.load(fileName);
+        if (content == null || content.length <= 0) {
+            content = FileUtil.load(defaultBackupName(fileName));
+        }
+
+        return content;
+    }
+
+    public static byte[] safeLoad(String fileName, String backupFileName) {
+        byte[] content = FileUtil.load(fileName);
+        if (content == null || content.length <= 0) {
+            content = FileUtil.load(backupFileName);
+        }
+
+        return content;
+    }
+
+    private static String defaultBackupName(String fileName) {
+        if (StringUtils.isEmpty(fileName)) {
+            return fileName;
+        }
+        File file = new File(fileName);
+        String parent = file.getParent();
+        String name = file.getName();
+        String backupFileName = name;
+        if (StringUtils.isEmpty(parent)) {
+            backupFileName = "backup" + File.separator + backupFileName;
+        } else {
+            backupFileName = parent + "backup" + File.separator + backupFileName;
+        }
+
+        return backupFileName;
+    }
+
     public static boolean save(String content, String fileName) {
         File file = new File(fileName);
         if (!file.getParentFile().exists()) {
@@ -30,19 +81,17 @@ public class FileUtil {
         return false;
     }
 
-    public static boolean backup(String fileName, String backupName) {
-        File srcfile = new File(fileName);
-        File destFile = new File(backupName);
-        if (!destFile.getParentFile().exists()) {
-            destFile.getParentFile().mkdirs();
-        }
-
-        if (destFile.exists()) {
-            destFile.delete();
-        }
-
+    public static boolean copy(String src, String dest) {
+        File srcfile = new File(src);
         if (!srcfile.exists()) {
             return false;
+        }
+
+        File destFile = new File(dest);
+        if (!destFile.getParentFile().exists()) {
+            destFile.getParentFile().mkdirs();
+        } else if (destFile.exists()) {
+            destFile.delete();
         }
 
         try {

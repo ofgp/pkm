@@ -30,7 +30,6 @@ public class ServiceKeyDao {
     private String savePath;
 
     public static final String FILE_NAME = "service-key";
-    public static final String BACKUP_FILE_NAME = "backup/service-key";
 
     @Data
     private class FileData {
@@ -46,12 +45,9 @@ public class ServiceKeyDao {
         }
 
 
-        byte[] content = FileUtil.load(savePath + FILE_NAME);
+        byte[] content = FileUtil.safeLoad(savePath + FILE_NAME);
         if (content == null || content.length <= 0) {
-            content = FileUtil.load(savePath + BACKUP_FILE_NAME);
-        }
-
-        if (content == null || content.length <= 0) {
+            logger.info("warning:none local data!");
             return;
         }
 
@@ -80,12 +76,7 @@ public class ServiceKeyDao {
         boolean success;
         byte[] content = AESUtil.aesEncrypt(new Gson().toJson(data).getBytes(), Constant.ADMIN_KEY);
 
-        success = FileUtil.save(Converter.byteArrayToHexString(content), savePath + FILE_NAME);
-        if (success) {
-            success = FileUtil.backup(savePath + FILE_NAME, savePath + BACKUP_FILE_NAME);
-        }
-
-        return success;
+        return FileUtil.safeSave(Converter.byteArrayToHexString(content), savePath + FILE_NAME);
     }
 
     public ServiceKey findByPubHash(String pubHash) {

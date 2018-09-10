@@ -46,4 +46,5 @@ privateKey: A899F28317CCD8E978BB163B4FC18C35717072D58E22720E2C81DFE710EBFE34
 ```
 
 #### 接口文档
-服务地址/swagger-ui.html，例如：http://127.0.0.1/swagger-ui.html
+服务部署运行后，自动生成在线文档，访问方式为：服务地址/swagger-ui.html。
+>例如在本机部署运行在8081端口后，在线文档访问地址为：http://127.0.0.1:8081/swagger-ui.html

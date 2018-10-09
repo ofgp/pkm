@@ -1,8 +1,8 @@
 package com.rst.pkm.controller;
 
+import com.rst.pkm.common.Constant;
 import com.rst.pkm.common.Converter;
 import com.rst.pkm.common.ECDSASignature;
-import com.rst.pkm.config.CurrentThreadData;
 import com.rst.pkm.controller.interceptor.DisableRequestCheck;
 import com.rst.pkm.dto.request.ReqGenerateKey;
 import com.rst.pkm.dto.request.ReqGenerateSignature;
@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author hujia
  */
@@ -35,12 +37,15 @@ public class KeyController {
 
     @ApiOperation("生成count对公私钥")
     @PostMapping("/generate")
-    public CommonResult<ResGenerateKey> generateKey(@Validated @RequestBody ReqGenerateKey body) {
+    public CommonResult<ResGenerateKey> generateKey(@Validated @RequestBody ReqGenerateKey body,
+                                                    HttpServletRequest request) {
         ResGenerateKey res = new ResGenerateKey();
+
+        String serviceId = request.getHeader(Constant.SERVICE_ID);
 
         for (int i = 0; i < body.getCount(); i++) {
             res.getKeys().add(new ResGenerateKey.Key(
-                    keyService.generateKey(CurrentThreadData.serviceId())));
+                    keyService.generateKey(serviceId)));
         }
 
         return CommonResult.make(res);

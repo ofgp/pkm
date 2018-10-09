@@ -3,7 +3,6 @@ package com.rst.pkm.controller.interceptor;
 import com.rst.pkm.common.Constant;
 import com.rst.pkm.common.Converter;
 import com.rst.pkm.common.Error;
-import com.rst.pkm.config.CurrentThreadData;
 import com.rst.pkm.data.entity.ServiceProfile;
 import com.rst.pkm.data.dao.ServiceProfileDao;
 import com.rst.pkm.dto.request.BaseRequest;
@@ -63,14 +62,10 @@ public class RequestBodyAdvice extends RequestBodyAdviceAdapter {
                     CustomException.response(Error.SID_NOT_PRESENT);
                 }
 
-                CurrentThreadData.setServiceId(serviceId);
-
                 String signature = inputMessage.getHeaders().getFirst(Constant.SIGNATURE_HEADER);
                 if (StringUtils.isEmpty(signature) || StringUtils.isEmpty(serviceId)) {
                     CustomException.response(Error.SIGNATURE_NOT_PRESENT);
                 }
-
-                CurrentThreadData.setSignature(signature);
 
                 ServiceProfile sp = spRepository.findByServiceId(serviceId);
                 if (sp == null) {

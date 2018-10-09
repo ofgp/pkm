@@ -138,6 +138,7 @@ public class GodServiceImpl implements GodService {
         if (serviceProfile == null) {
             CustomException.response(Error.SID_INVALID);
         }
+
         return serviceProfile;
     }
 }

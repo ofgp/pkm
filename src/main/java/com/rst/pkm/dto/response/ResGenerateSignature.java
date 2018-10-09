@@ -10,7 +10,7 @@ import lombok.Data;
  * @author hujia
  */
 @Data
-public class ResGenerateSignature extends Readable {
+public class  ResGenerateSignature extends Readable {
     @ApiModelProperty(value = "der编码序列化的签名(BTC/BCH)")
     private String signatureDerHex;
     @ApiModelProperty(value = "R值, 16进制字符串代表的数值")

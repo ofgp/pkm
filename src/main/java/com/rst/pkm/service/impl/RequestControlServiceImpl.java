@@ -3,6 +3,7 @@ package com.rst.pkm.service.impl;
 import com.rst.pkm.common.Constant;
 import com.rst.pkm.common.Error;
 import com.rst.pkm.common.IpUtil;
+import com.rst.pkm.config.CurrentThreadData;
 import com.rst.pkm.controller.interceptor.CustomException;
 import com.rst.pkm.data.dao.ServiceProfileDao;
 import com.rst.pkm.data.entity.ServiceProfile;
@@ -29,6 +30,8 @@ public class RequestControlServiceImpl implements RequestControlService {
         if (StringUtils.isEmpty(serviceId)) {
             CustomException.response(Error.SID_NOT_PRESENT);
         }
+
+        CurrentThreadData.setServiceId(serviceId);
 
         ServiceProfile serviceProfile = spRepository.findByServiceId(serviceId);
         if (serviceProfile == null || serviceProfile.isLocked()) {

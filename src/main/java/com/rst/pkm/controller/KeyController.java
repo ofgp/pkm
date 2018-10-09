@@ -2,6 +2,7 @@ package com.rst.pkm.controller;
 
 import com.rst.pkm.common.Converter;
 import com.rst.pkm.common.ECDSASignature;
+import com.rst.pkm.config.CurrentThreadData;
 import com.rst.pkm.controller.interceptor.DisableRequestCheck;
 import com.rst.pkm.dto.request.ReqGenerateKey;
 import com.rst.pkm.dto.request.ReqGenerateSignature;
@@ -39,7 +40,7 @@ public class KeyController {
 
         for (int i = 0; i < body.getCount(); i++) {
             res.getKeys().add(new ResGenerateKey.Key(
-                    keyService.generateKey(body.getServiceId())));
+                    keyService.generateKey(CurrentThreadData.serviceId())));
         }
 
         return CommonResult.make(res);

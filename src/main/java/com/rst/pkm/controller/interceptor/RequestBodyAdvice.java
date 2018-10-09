@@ -30,7 +30,7 @@ import java.lang.reflect.Type;
  * @author hujia
  * @date 2017/6/21
  */
-@ControllerAdvice(basePackages = "com.rst1.pkm.controller")
+@ControllerAdvice(basePackages = "com.rst.pkm.controller")
 public class RequestBodyAdvice extends RequestBodyAdviceAdapter {
     public static final int MAX_LIVE_SECOND = 300;
 
